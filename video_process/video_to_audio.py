@@ -8,13 +8,16 @@ def extract_audio(mp4_file_path, output_audio_name, audio_format):
     :param output_audio_name: 输出音频文件的名称（不含扩展名）。
     :param audio_format: 用户选择的音频格式。
     """
-    # 根据用户选择的格式确定文件扩展名和编解码器
+    # 根据用户选择的格式确定文件扩展名
     if audio_format == "1":
         extension = ".mp3"
         codec = "libmp3lame"
     elif audio_format == "2":
         extension = ".flac"
         codec = "flac"
+    elif audio_format == "3":
+        extension = ".wav"
+        codec = None  # 对于WAV格式，不需要指定编解码器
     else:
         print("未选择有效的格式，程序将退出。")
         return
@@ -33,7 +36,10 @@ def extract_audio(mp4_file_path, output_audio_name, audio_format):
     
     # 尝试将音频保存到指定路径和格式
     try:
-        audio.write_audiofile(output_audio_path, codec=codec)
+        if codec:  # 如果指定了编解码器，使用它
+            audio.write_audiofile(output_audio_path, codec=codec)
+        else:  # 否则，默认处理（如WAV格式）
+            audio.write_audiofile(output_audio_path)
     except Exception as e:
         print(f"保存音频文件时出错：{e}")
     else:
@@ -48,7 +54,7 @@ if __name__ == "__main__":
     print("请输入MP4视频文件的完整路径：")
     mp4_file_path = input().strip()  # 去除可能的前后空格
 
-    print("请选择输出音频的格式（输入数字）：\n1. MP3\n2. FLAC")
+    print("请选择输出音频的格式（输入数字）：\n1. MP3\n2. FLAC\n3. WAV")
     audio_format = input().strip()
 
     print("请输入输出音频文件的名称（不需要扩展名）：")
