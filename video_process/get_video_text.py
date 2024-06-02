@@ -37,9 +37,9 @@ def transcribe_audio(model, device):
 def save_transcription_to_txt(transcription_result, txt_path):
     with open(txt_path, "w", encoding="utf-8") as txt_file:
         for segment in transcription_result["segments"]:
-            start = round(segment['start'], 2)
-            end = round(segment['end'], 2)
-            txt_file.write(f"{start}-{end}: {segment['text']}\n")
+            # start = round(segment['start'], 2)
+            # end = round(segment['end'], 2)
+            txt_file.write(f"{segment['text']}\n")
 
 
 
