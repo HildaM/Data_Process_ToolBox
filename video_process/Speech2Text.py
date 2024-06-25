@@ -34,7 +34,7 @@ class Speech2Text:
 
     def __init__(self, whisper_model="large", whisper_device="cuda"):
         self.whisper_model = whisper_model
-        self.whisper_device = ("cuda" if torch.cuda.is_available() else "cpu") or whisper_device
+        self.whisper_device = whisper_device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.ensure_directories()
 
     @staticmethod
