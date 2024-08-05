@@ -1,6 +1,21 @@
 import os
 import base64
 
+# 黑名单配置
+folder_blacklist = ['.git']
+file_extension_blacklist = []  # 可以在这里添加特定不加密的文件扩展名
+
+def custom_file_blacklist(relative_path):
+    """
+    自定义文件黑名单策略。
+    返回 True 表示文件在黑名单中，不进行加密。
+    """
+    # 没有后缀的文件不加密
+    if os.path.splitext(relative_path)[1] == '':
+        return True
+    # 可以在这里添加更多自定义逻辑
+    return False
+
 def encode_to_base64(content):
     return base64.b64encode(content).decode('utf-8')
 
@@ -8,7 +23,17 @@ def decode_from_base64(content):
     return base64.b64decode(content.encode('utf-8'))
 
 def should_encrypt(relative_path):
-    return relative_path.endswith('.go') or relative_path.endswith('.mod') or relative_path.endswith('.md')
+    # 检查文件夹黑名单
+    for folder in folder_blacklist:
+        if folder in relative_path.split(os.sep):
+            return False
+    # 检查文件扩展名黑名单
+    if os.path.splitext(relative_path)[1] in file_extension_blacklist:
+        return False
+    # 检查自定义文件黑名单策略
+    if custom_file_blacklist(relative_path):
+        return False
+    return True
 
 def encrypt_file(file_path, relative_path):
     try:
@@ -36,8 +61,11 @@ def encrypt_file(file_path, relative_path):
 def encrypt_folder(folder_path):
     encrypted_content = ""
     for root, dirs, files in os.walk(folder_path):
-        if '.git' in dirs:
-            dirs.remove('.git')  # 不处理.git文件夹
+        # 处理文件夹黑名单
+        for folder in folder_blacklist:
+            if folder in dirs:
+                dirs.remove(folder)
+              
         for file in files:
             file_path = os.path.join(root, file)
             relative_path = os.path.relpath(file_path, folder_path)
